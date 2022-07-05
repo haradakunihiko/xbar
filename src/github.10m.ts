@@ -12,23 +12,30 @@
 
 import { xbar, separator } from "https://deno.land/x/xbar@v2.1.0/mod.ts";
 
-// deno-lint-ignore no-explicit-any
-async function githubAPI(path: string) :Promise<any> {
+const ICON_BASE = 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAA'
+const ICON_PR = ICON_BASE+ 'TJJREFUKJG9krFOAlEQRe/MLpqHnd/ATyBWsLWF+hcLPYXibvwCE/gLC2MNVrD7AbbGnpjYboBlro2QXWATabzVy5x338ydPKBC4awTVTEA8Huz9i1FI5gZBINh6+0lnHUiEXkAUGmWMGm/c7Fues4pLU9IPv+aAABm9i2qT6Pm+BECbuoqpnZWW4lmmRLG3ZdV9VyAOEyD+1JdVO4yqX+ua7UPofRHrUlEMgaA4cVYALkEACF6e/N2k4DdJCh1Ky7nENftyVACo9akcjElox3I9yfjsdoaVfFPHbtpcG2GOUy/wjS42r0QTjs3ZpibYV7kPmkxVuuGOKfIl1MAr0WjqMRcrBqec8oCVwDwnNOFnwugezkJ4+ZnFbkPeANanpwsAQr7+2m8Qab1FKcAeYgfqR/3P4pMOYR15QAAAABJRU5ErkJggg==';
+const ICON_ISSUE = ICON_BASE+ 'ZxJREFUKJGdkjFoU2EUhb97k9jNRzEFoWvJVHXoZCqIaQaH7JaUbtpi2zc4ORWJYKGTYJLBroFaiGPo0hBwyAOhU51Cd8EOOid53uugL4SnkOK3/dx7OPccfvhPZPqxHZUWc0gIUjFs6c/CJdDBtN580P36lzCM1jZ+mr9HuFKkJfgXABO9i/mmqOTd7VlztXcyEYbR2oabtFx5kx+Oa7VHn+LpS7bOV3K5UfBaTF+6WLW52juR7ai0mDEGovq2WezuJ8t7UdkBGsXu5KqdfvlQhOeeGRc0h4QIV/nhuDarkIVgft+xHxJnQwWpKNJKn/cvasvtkcCxuFTUsKWkiOsgrhcoBb2uIE1W4NKRO8DH6cF0KSnLewYDBTqGb26dr+Sm53tR2ZNmE8LTx3O4V9XpKKZ1FV24MZyf2aoH8YE5garXBWC3X1oX12NXO8zfvPWqttwepZ08iA9wXqDypFE8a09y7PZL64geCXx37IO4XiSZcK/+dso8bRTP2pD65DufH96WOBuKSwWlAGD4QJ2Oqtff3e99mxVnJr8AXSGi02ni0+YAAAAASUVORK5CYII=';
+// const ICON_COMMIT = ICON_BASE+ 'HhJREFUKJHl0LEKwkAQBNCH3yIaf05S+VUqmh8ykFoUYn8WbnEc8a7XgYVlmNkdhv/EDgNmvHDFtmXq8ETCiFvsD2xqxksI9xnXB3cqxamYceHgVOpWC6JUi/QNQxj7jDsEd6wZ83KmLOId69bXzqekOeas0eiv4g3q4SY7NY1R2gAAAABJRU5ErkJggg==';
+
+async function githubAPI(path: string) :Promise<IssueResponse> {
 	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN')
 
 	const headers = { 'Authorization' : `token ${TOKEN}`, 'Accept' : 'application/json' }
-	return await fetch(`https://api.github.com/${path}`, {headers})
-  	.then(response => response.json())
+	const res = await fetch(`https://api.github.com/${path}`, {headers});
+	if (res.status != 200) {
+		throw new Error(`github access error: ${res.statusText}`);
+	}
+  	return await res.json();
 }
 
 async function fetchIssues(params: {[index: string]: string}) {
 	const url  = `search/issues?q=${Object.keys(params).map(k => `${k}:${params[k]}`).join('+')}`;
-	const res: issueResponse = await githubAPI(url)
+	const res = await githubAPI(url)
 	return res;
 }
 
-function printIssues(issues: issueResponse, {title, color, icon, shouldFold = false} : {title: string, color: string, icon: string, shouldFold?: boolean }) {
-	const grouped = issues.items.reduce<{[key:string]: issueItem[]}>((acc, current) => {
+function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = false} : {title: string, color: string, icon: string, shouldFold?: boolean }) {
+	const grouped = issues.items.reduce<{[key:string]: IssueItem[]}>((acc, current) => {
 		const repository = current.repository_url.split('/').pop() || '';
 		if (!acc[repository]) {
 			acc[repository] = [];
@@ -97,14 +104,21 @@ async function main() {
 	printIssues(assigned, {title: `Assigned Issues (${assigned.items.length})`, color: '#66aaff', icon: ICON_ISSUE, shouldFold: assigned.items.length > 10 } );
 }
 
-main();
-
-interface issueResponse {
-	total_count: number,
-	items: [issueItem]
+try {
+	await main();
+} catch(e) {
+	if (e instanceof Error) {
+		console.log(e.message);
+	}
 }
 
-interface issueItem {
+
+interface IssueResponse {
+	total_count: number,
+	items: [IssueItem]
+}
+
+interface IssueItem {
 	title: string,
 	html_url: string,
 	repository_url: string,
@@ -114,7 +128,3 @@ interface issueItem {
 
 }
 
-const ICON_BASE = 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAA'
-const ICON_PR = ICON_BASE+ 'TJJREFUKJG9krFOAlEQRe/MLpqHnd/ATyBWsLWF+hcLPYXibvwCE/gLC2MNVrD7AbbGnpjYboBlro2QXWATabzVy5x338ydPKBC4awTVTEA8Huz9i1FI5gZBINh6+0lnHUiEXkAUGmWMGm/c7Fues4pLU9IPv+aAABm9i2qT6Pm+BECbuoqpnZWW4lmmRLG3ZdV9VyAOEyD+1JdVO4yqX+ua7UPofRHrUlEMgaA4cVYALkEACF6e/N2k4DdJCh1Ky7nENftyVACo9akcjElox3I9yfjsdoaVfFPHbtpcG2GOUy/wjS42r0QTjs3ZpibYV7kPmkxVuuGOKfIl1MAr0WjqMRcrBqec8oCVwDwnNOFnwugezkJ4+ZnFbkPeANanpwsAQr7+2m8Qab1FKcAeYgfqR/3P4pMOYR15QAAAABJRU5ErkJggg==';
-const ICON_ISSUE = ICON_BASE+ 'ZxJREFUKJGdkjFoU2EUhb97k9jNRzEFoWvJVHXoZCqIaQaH7JaUbtpi2zc4ORWJYKGTYJLBroFaiGPo0hBwyAOhU51Cd8EOOid53uugL4SnkOK3/dx7OPccfvhPZPqxHZUWc0gIUjFs6c/CJdDBtN580P36lzCM1jZ+mr9HuFKkJfgXABO9i/mmqOTd7VlztXcyEYbR2oabtFx5kx+Oa7VHn+LpS7bOV3K5UfBaTF+6WLW52juR7ai0mDEGovq2WezuJ8t7UdkBGsXu5KqdfvlQhOeeGRc0h4QIV/nhuDarkIVgft+xHxJnQwWpKNJKn/cvasvtkcCxuFTUsKWkiOsgrhcoBb2uIE1W4NKRO8DH6cF0KSnLewYDBTqGb26dr+Sm53tR2ZNmE8LTx3O4V9XpKKZ1FV24MZyf2aoH8YE5garXBWC3X1oX12NXO8zfvPWqttwepZ08iA9wXqDypFE8a09y7PZL64geCXx37IO4XiSZcK/+dso8bRTP2pD65DufH96WOBuKSwWlAGD4QJ2Oqtff3e99mxVnJr8AXSGi02ni0+YAAAAASUVORK5CYII=';
-// const ICON_COMMIT = ICON_BASE+ 'HhJREFUKJHl0LEKwkAQBNCH3yIaf05S+VUqmh8ykFoUYn8WbnEc8a7XgYVlmNkdhv/EDgNmvHDFtmXq8ETCiFvsD2xqxksI9xnXB3cqxamYceHgVOpWC6JUi/QNQxj7jDsEd6wZ83KmLOId69bXzqekOeas0eiv4g3q4SY7NY1R2gAAAABJRU5ErkJggg==';
