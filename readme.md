@@ -2,10 +2,16 @@
 
 ## mac
 
-1. `src` 以下のファイルを `Library/Application Support/xbar/plugins` 以下にコピー
-2. `package.json`, `package-lock.json` を `Library/Application Support/xbar` 以下にコピー
-3. `Library/Application Support/xbar` で `npm install` を行う
-4. https://deno.land/x/xbar@v2.1.0 を参考にdenoをインストール
+1. denoをインストール
+2. `src` 以下のファイルを `Library/Application Support/xbar/plugins` 以下にコピー
+3. `package.json`, `package-lock.json` を `Library/Application Support/xbar` 以下にコピー
+4. `Library/Application Support/xbar` で `npm install` を行う
+
+
+### 参考
+- https://github.com/denoland/deno
+- https://deno.land/x/xbar@v2.1.0
+
 
 # plugin
 
