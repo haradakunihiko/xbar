@@ -7,7 +7,7 @@
 // <xbar.desc></xbar.desc>
 // <xbar.image></xbar.image>
 // <xbar.dependencies>deno</xbar.dependencies>
-// <xbar.abouturl>https://github.com/haradakunihiko</xbar.abouturl>
+// <xbar.abouturl>https://github.com/haradakunihiko/xbar</xbar.abouturl>
 // <xbar.var>string(VAR_GITHUB_TOKEN=""): GITHUB API token to get access to remote data.</xbar.var>
 
 import { xbar, separator } from "https://deno.land/x/xbar@v2.1.0/mod.ts";
@@ -95,7 +95,7 @@ async function main() {
 			text: '---'
 		}
 	])
-	printIssues(reviews, {title: `Awaiting Reviews (${reviews.items.length})`, color: '#ee8888', icon: ICON_PR });
+	printIssues(reviews, {title: `Awaiting Reviews (${reviews.items.length})`, color: '#ff0000', icon: ICON_PR });
 	xbar([
 		{
 			text: '---'
