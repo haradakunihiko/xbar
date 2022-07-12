@@ -1,6 +1,9 @@
-# install
+[xbar](https://xbarapp.com/)のplugin
 
-## mac
+
+## install
+
+### mac
 
 1. denoをインストール
 2. `src` 以下のファイルを `Library/Application Support/xbar/plugins` 以下にコピー
@@ -8,14 +11,14 @@
 4. `Library/Application Support/xbar` で `npm install` を行う
 
 
-### 参考
+#### 参考
 - https://github.com/denoland/deno
 - https://deno.land/x/xbar@v2.1.0
 
 
-# plugin
+## plugin
 
-## github
+### github
 
 githubのissueを表示します。
 
@@ -23,7 +26,7 @@ githubのissueを表示します。
 - 自分にレビューアサインされたPR
 - 自分にアサインされたPR
 
-### 設定
+#### 設定
 
 xbar > Open plugins... を開く
 
