@@ -14,9 +14,9 @@ githubのissueを表示します。
 - ファイルをコピー
 
 ```
-cp ./src/github.10m.js* ~/Library/Application Support/xbar/plugins
-cp ./package.json ~/Library/Application Support/xbar
-cp ./package-lock.json ~/Library/Application Support/xbar
+cp ./src/github.10m.js* ~/Library/"Application Support"/xbar/plugins
+cp ./package.json ~/Library/"Application Support"/xbar
+cp ./package-lock.json ~/Library/"Application Support"/xbar
 ```
 
 必要に応じて、 `github.10m.js` の `#!/usr/local/bin/node` を適宜環境に合わせて変更する。
@@ -24,7 +24,7 @@ cp ./package-lock.json ~/Library/Application Support/xbar
 - libraryインストール
 
 ```
-cd ~/Library/Application Support/xbar
+cd ~/Library/"Application Support"/xbar
 npm install
 ```
 
