@@ -44,4 +44,4 @@ Github tokenを設定する
 
 
 # 開発メモ
-tsバージョンはDenoを利用しているため、 https://deno.land/x/xbar@v2.1.0 を参考にdenoをインストールして実行できる。
+tsバージョンはDenoを利用しているため、 https://deno.land/x/xbar@v2.1.0 を参考にdenoをインストールすると実行できる。
