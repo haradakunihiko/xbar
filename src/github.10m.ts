@@ -36,11 +36,14 @@ async function fetchIssues(params: {[index: string]: string}) {
 
 function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = false} : {title: string, color: string, icon: string, shouldFold?: boolean }) {
 	const grouped = issues.items.reduce<{[key:string]: IssueItem[]}>((acc, current) => {
-		const repository = current.repository_url.split('/').pop() || '';
-		if (!acc[repository]) {
-			acc[repository] = [];
+		const partial = current.repository_url.split('/');
+		const repo = partial.pop() || '';
+		const org = partial.pop() || '';
+		const key = `${org} - ${repo}`
+		if (!acc[key]) {
+			acc[key] = [];
 		}
-		acc[repository].push(current);
+		acc[key].push(current);
 		return acc;
 	}, {});
 
