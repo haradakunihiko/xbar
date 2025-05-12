@@ -1,47 +1,47 @@
+# GitHub Issues Xbar Plugin
 
-# plugin
+これは、GitHub の Issue や Pull Request をメニューバーに表示するための [Xbar](https://xbarapp.com/) プラグインです。
 
-## github
+以下の情報を表示できます。
 
-githubのissueを表示します。
+*   あなたが作成した Pull Request
+*   あなたにレビューが割り当てられた Pull Request
+*   あなたにアサインされた Issue および Pull Request
 
-- 自分の作成したPR
-- 自分にレビューアサインされたPR
-- 自分にアサインされたPR
+## 特徴
 
-### install
+*   メニューバーから素早く GitHub のタスクを確認できます。
+*   Deno で書かれており、設定も簡単です。
 
-- ファイルをコピー
+## 前提条件
 
-```
-cp ./src/github.10m.js* ~/Library/"Application Support"/xbar/plugins
-cp ./package.json ~/Library/"Application Support"/xbar
-cp ./package-lock.json ~/Library/"Application Support"/xbar
-```
+*   [Deno](https://deno.land/) がインストールされていること。
 
-必要に応じて、 `github.10m.js` の `#!/usr/local/bin/node` を適宜環境に合わせて変更する。
+## インストール
 
-- libraryインストール
+1.  このリポジトリをクローンするか、`github.10m.ts` ファイルをダウンロードします。
+2.  `github.10m.ts` ファイルを Xbar のプラグインディレクトリに配置します。以下のいずれかの方法で行います。
+    *   **シンボリックリンクを作成する (推奨):**
+        ターミナルで以下のコマンドを実行します。`<path_to_plugin_directory>` は、`github.10m.ts` がある `src` ディレクトリの実際のパスに置き換えてください。
+        ```bash
+        ln -s <path_to_plugin_directory>/src/github.10m.ts ~/Library/Application\ Support/xbar/plugins/github.10m.ts
+        ```
+    *   **ファイルを直接コピーする:**
+        `github.10m.ts` ファイルを `~/Library/Application Support/xbar/plugins/` ディレクトリにコピーします。
 
-```
-cd ~/Library/"Application Support"/xbar
-npm install
-```
+## 設定
 
-### 設定
+1.  メニューバーの Xbar アイコンをクリックし、「Open plugins...」を選択します。
 
-メニューバーより、 xbar > Open plugins... を開く
+    <img width="734" alt="スクリーンショット 2022-07-05 20 52 57" src="https://user-images.githubusercontent.com/4531125/177322388-dab90841-0472-4fc9-8715-b9db5ffb2624.png">
 
-<img width="734" alt="スクリーンショット 2022-07-05 20 52 57" src="https://user-images.githubusercontent.com/4531125/177322388-dab90841-0472-4fc9-8715-b9db5ffb2624.png">
+2.  表示されたプラグイン一覧の中から `github.10m.ts` を見つけ、設定を行います。
+    *   **GitHub Token の設定:** プラグインが GitHub API にアクセスするために必要な個人アクセストークンを設定します。トークンは [GitHub の設定ページ](https://github.com/settings/tokens) から作成できます。必要なスコープは `repo` (プライベートリポジトリを含む場合) または `public_repo` (パブリックリポジトリのみの場合) です。
 
-Github tokenを設定する
+    <img width="856" alt="スクリーンショット 2022-07-05 20 53 12" src="https://user-images.githubusercontent.com/4531125/177322401-0d1793c8-e287-4c60-a038-1de09c4f7abd.png">
 
-<img width="856" alt="スクリーンショット 2022-07-05 20 53 12" src="https://user-images.githubusercontent.com/4531125/177322401-0d1793c8-e287-4c60-a038-1de09c4f7abd.png">
+3.  設定後、Xbar メニューから「Refresh all plugins」を選択するか、個別のプラグインメニューから「Refresh」を選択してプラグインを再読み込みします。
 
-※ 直接　`github.10m.js.vars.json` を更新してもよい
+## 貢献
 
-再読み込みを行う
-
-
-# 開発メモ
-tsバージョンはDenoを利用しているため、 https://deno.land/x/xbar@v2.1.0 を参考にdenoをインストールすると実行できる。
+バグ報告や機能リクエストは、Issue または Pull Request でお願いします。

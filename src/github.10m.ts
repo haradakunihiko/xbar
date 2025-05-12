@@ -1,5 +1,5 @@
-#!/usr/local/bin/deno run --allow-net=api.github.com --allow-env
-
+#!/usr/bin/env -S -P/${HOME}/.deno/bin:/opt/homebrew/bin deno run --allow-net=api.github.com --allow-env
+ 
 // <xbar.title>GitHub Notifications</xbar.title>
 // <xbar.version>v1.0.0</xbar.version>
 // <xbar.author>haradakunihiko</xbar.author>
@@ -70,7 +70,13 @@ function fold(text: string, fold = false) {
 async function main() {
 	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN')
 	if (!TOKEN) {
+		
 		xbar([
+			{
+				text: '●',
+				color: '#FF0000',
+			},
+			separator,
 			{
 				text: 'Open Plugin... in menu bar and set github token'
 			}
