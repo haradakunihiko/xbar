@@ -35,32 +35,47 @@ async function fetchIssues(params) {
 }
 
 function printIssues(issues, {title, color, icon, shouldFold = false}) {
-	const grouped = issues.items.reduce((acc, current) => {
-		const partial = current.repository_url.split('/');
-		const repo = partial.pop() || '';
-		const org = partial.pop() || '';
-		const key = `${org} - ${repo}`
-		if (!acc[key]) {
-			acc[key] = [];
-		}
-		acc[key].push(current);
-		return acc;
-	}, {});
+  const groupedByRepo = issues.items.reduce((acc, current) => {
+    const partial = current.repository_url.split('/');
+    const repo = partial.pop() || '';
+    const org = partial.pop() || '';
+    const repoKey = `${org} - ${repo}`;
+    if (!acc[repoKey]) {
+      acc[repoKey] = [];
+    }
+    acc[repoKey].push(current);
+    return acc;
+  }, {});
 
-	xbar([
-		{
-			text: title,
-			color: color,
-		},
-		...Object.keys(grouped).flatMap((repo) => [
-			{ text: fold(repo, shouldFold) },
-			...grouped[repo].map(e => ({
-				text: fold(`${e.title} by ${e.user.login}`, shouldFold),
-				href: e.html_url,
-				image: icon,
-			}))
-		])
-	]);	
+  xbar([
+    {
+      text: title,
+      color: color,
+    },
+    ...Object.keys(groupedByRepo).flatMap((repoKey) => {
+      const issuesInRepo = groupedByRepo[repoKey];
+      const groupedByMilestone = issuesInRepo.reduce((acc, current) => {
+        const milestoneTitle = current.milestone ? current.milestone.title : "";
+        if (!acc[milestoneTitle]) {
+          acc[milestoneTitle] = [];
+        }
+        acc[milestoneTitle].push(current);
+        return acc;
+      }, {});
+
+      return [
+        { text: fold(repoKey, shouldFold) },
+        ...Object.keys(groupedByMilestone).flatMap((milestoneKey) => [
+          ...(milestoneKey ? [{ text: fold(`${milestoneKey}`, shouldFold) }]: []),
+          ...groupedByMilestone[milestoneKey].map(e => ({
+            text: fold(`${e.title} by ${e.user.login}`, shouldFold),
+            href: e.html_url,
+            image: icon,
+          }))
+        ])
+      ];
+    })
+  ]);
 }
 
 function fold(text, fold = false) {
@@ -114,4 +129,3 @@ try {
 		console.log(e.message);
 	}
 }
-

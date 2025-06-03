@@ -1,4 +1,5 @@
 #!/usr/bin/env -S -P/${HOME}/.deno/bin:/opt/homebrew/bin deno run --allow-net=api.github.com --allow-env
+/// <reference lib="deno.ns" />
  
 // <xbar.title>GitHub Notifications</xbar.title>
 // <xbar.version>v1.0.0</xbar.version>
@@ -35,32 +36,47 @@ async function fetchIssues(params: {[index: string]: string}) {
 }
 
 function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = false} : {title: string, color: string, icon: string, shouldFold?: boolean }) {
-	const grouped = issues.items.reduce<{[key:string]: IssueItem[]}>((acc, current) => {
-		const partial = current.repository_url.split('/');
-		const repo = partial.pop() || '';
-		const org = partial.pop() || '';
-		const key = `${org} - ${repo}`
-		if (!acc[key]) {
-			acc[key] = [];
-		}
-		acc[key].push(current);
-		return acc;
-	}, {});
+  const groupedByRepo = issues.items.reduce<{[repoKey: string]: IssueItem[]}>((acc, current) => {
+    const partial = current.repository_url.split('/');
+    const repo = partial.pop() || '';
+    const org = partial.pop() || '';
+    const repoKey = `${org} - ${repo}`;
+    if (!acc[repoKey]) {
+      acc[repoKey] = [];
+    }
+    acc[repoKey].push(current);
+    return acc;
+  }, {});
 
-	xbar([
-		{
-			text: title,
-			color: color,
-		},
-		...Object.keys(grouped).flatMap((repo) => [
-			{ text: fold(repo, shouldFold) },
-			...grouped[repo].map(e => ({
-				text: fold(`${e.title} by ${e.user.login}`, shouldFold),
-				href: e.html_url,
-				image: icon,
-			}))
-		])
-	]);	
+  xbar([
+    {
+      text: title,
+      color: color,
+    },
+    ...Object.keys(groupedByRepo).flatMap((repoKey) => {
+      const issuesInRepo = groupedByRepo[repoKey];
+      const groupedByMilestone = issuesInRepo.reduce<{[milestoneKey: string]: IssueItem[]}>((acc, current) => {
+        const milestoneTitle = current.milestone ? current.milestone.title : "";
+        if (!acc[milestoneTitle]) {
+          acc[milestoneTitle] = [];
+        }
+        acc[milestoneTitle].push(current);
+        return acc;
+      }, {});
+
+      return [
+        { text: fold(repoKey, shouldFold) },
+        ...Object.keys(groupedByMilestone).flatMap((milestoneKey) => [
+          ...(milestoneKey ? [{ text: fold(`${milestoneKey}`, shouldFold) }]: []),
+          ...groupedByMilestone[milestoneKey].map(e => ({
+            text: fold(`${e.title} by ${e.user.login}`, shouldFold),
+            href: e.html_url,
+            image: icon,
+          }))
+        ])
+      ];
+    })
+  ]);
 }
 
 function fold(text: string, fold = false) {
@@ -131,9 +147,11 @@ interface IssueItem {
 	title: string,
 	html_url: string,
 	repository_url: string,
-	user: {
-		login: string
-	},
-
+user: {
+login: string
+},
+milestone?: {
+title: string,
 }
 
+}
