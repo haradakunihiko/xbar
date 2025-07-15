@@ -55,6 +55,7 @@ function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = fa
     },
     ...Object.keys(groupedByRepo).flatMap((repoKey) => {
       const issuesInRepo = groupedByRepo[repoKey];
+	  
       const groupedByMilestone = issuesInRepo.reduce<{[milestoneKey: string]: IssueItem[]}>((acc, current) => {
         const milestoneTitle = current.milestone ? current.milestone.title : "";
         if (!acc[milestoneTitle]) {
@@ -67,7 +68,7 @@ function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = fa
       return [
         { text: fold(repoKey, shouldFold) },
         ...Object.keys(groupedByMilestone).flatMap((milestoneKey) => [
-          ...(milestoneKey ? [{ text: fold(`${milestoneKey}`, shouldFold) }]: []),
+          ...(milestoneKey ? [{ text: fold(`${milestoneKey}`, shouldFold) }]: [{ text: fold(`no-milestone`, shouldFold) }]),
           ...groupedByMilestone[milestoneKey].map(e => ({
             text: fold(`${e.title} by ${e.user.login}`, shouldFold),
             href: e.html_url,
