@@ -14,9 +14,8 @@
 import { xbar, separator } from "https://deno.land/x/xbar@v2.1.0/mod.ts";
 
 const ICON_BASE = 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAA'
-const ICON_PR = ICON_BASE+ 'TJJREFUKJG9krFOAlEQRe/MLpqHnd/ATyBWsLWF+hcLPYXibvwCE/gLC2MNVrD7AbbGnpjYboBlro2QXWATabzVy5x338ydPKBC4awTVTEA8Huz9i1FI5gZBINh6+0lnHUiEXkAUGmWMGm/c7Fues4pLU9IPv+aAABm9i2qT6Pm+BECbuoqpnZWW4lmmRLG3ZdV9VyAOEyD+1JdVO4yqX+ua7UPofRHrUlEMgaA4cVYALkEACF6e/N2k4DdJCh1Ky7nENftyVACo9akcjElox3I9yfjsdoaVfFPHbtpcG2GOUy/wjS42r0QTjs3ZpibYV7kPmkxVuuGOKfIl1MAr0WjqMRcrBqec8oCVwDwnNOFnwugezkJ4+ZnFbkPeANanpwsAQr7+2m8Qab1FKcAeYgfqR/3P4pMOYR15QAAAABJRU5ErkJggg==';
-const ICON_ISSUE = ICON_BASE+ 'ZxJREFUKJGdkjFoU2EUhb97k9jNRzEFoWvJVHXoZCqIaQaH7JaUbtpi2zc4ORWJYKGTYJLBroFaiGPo0hBwyAOhU51Cd8EOOid53uugL4SnkOK3/dx7OPccfvhPZPqxHZUWc0gIUjFs6c/CJdDBtN580P36lzCM1jZ+mr9HuFKkJfgXABO9i/mmqOTd7VlztXcyEYbR2oabtFx5kx+Oa7VHn+LpS7bOV3K5UfBaTF+6WLW52juR7ai0mDEGovq2WezuJ8t7UdkBGsXu5KqdfvlQhOeeGRc0h4QIV/nhuDarkIVgft+xHxJnQwWpKNJKn/cvasvtkcCxuFTUsKWkiOsgrhcoBb2uIE1W4NKRO8DH6cF0KSnLewYDBTqGb26dr+Sm53tR2ZNmE8LTx3O4V9XpKKZ1FV24MZyf2aoH8YE5garXBWC3X1oX12NXO8zfvPWqttwepZ08iA9wXqDypFE8a09y7PZL64geCXx37IO4XiSZcK/+dso8bRTP2pD65DufH96WOBuKSwWlAGD4QJ2Oqtff3e99mxVnJr8AXSGi02ni0+YAAAAASUVORK5CYII=';
-// const ICON_COMMIT = ICON_BASE+ 'HhJREFUKJHl0LEKwkAQBNCH3yIaf05S+VUqmh8ykFoUYn8WbnEc8a7XgYVlmNkdhv/EDgNmvHDFtmXq8ETCiFvsD2xqxksI9xnXB3cqxamYceHgVOpWC6JUi/QNQxj7jDsEd6wZ83KmLOId69bXzqekOeas0eiv4g3q4SY7NY1R2gAAAABJRU5ErkJggg==';
+const ICON_MERGE = ICON_BASE+ 'TJJREFUKJG9krFOAlEQRe/MLpqHnd/ATyBWsLWF+hcLPYXibvwCE/gLC2MNVrD7AbbGnpjYboBlro2QXWATabzVy5x338ydPKBC4awTVTEA8Huz9i1FI5gZBINh6+0lnHUiEXkAUGmWMGm/c7Fues4pLU9IPv+aAABm9i2qT6Pm+BECbuoqpnZWW4lmmRLG3ZdV9VyAOEyD+1JdVO4yqX+ua7UPofRHrUlEMgaA4cVYALkEACF6e/N2k4DdJCh1Ky7nENftyVACo9akcjElox3I9yfjsdoaVfFPHbtpcG2GOUy/wjS42r0QTjs3ZpibYV7kPmkxVuuGOKfIl1MAr0WjqMRcrBqec8oCVwDwnNOFnwugezkJ4+ZnFbkPeANanpwsAQr7+2m8Qab1FKcAeYgfqR/3P4pMOYR15QAAAABJRU5ErkJggg==';
+const ICON_CAUTION = ICON_BASE+ 'ZxJREFUKJGdkjFoU2EUhb97k9jNRzEFoWvJVHXoZCqIaQaH7JaUbtpi2zc4ORWJYKGTYJLBroFaiGPo0hBwyAOhU51Cd8EOOid53uugL4SnkOK3/dx7OPccfvhPZPqxHZUWc0gIUjFs6c/CJdDBtN580P36lzCM1jZ+mr9HuFKkJfgXABO9i/mmqOTd7VlztXcyEYbR2oabtFx5kx+Oa7VHn+LpS7bOV3K5UfBaTF+6WLW52juR7ai0mDEGovq2WezuJ8t7UdkBGsXu5KqdfvlQhOeeGRc0h4QIV/nhuDarkIVgft+xHxJnQwWpKNJKn/cvasvtkcCxuFTUsKWkiOsgrhcoBb2uIE1W4NKRO8DH6cF0KSnLewYDBTqGb26dr+Sm53tR2ZNmE8LTx3O4V9XpKKZ1FV24MZyf2aoH8YE5garXBWC3X1oX12NXO8zfvPWqttwepZ08iA9wXqDypFE8a09y7PZL64geCXx37IO4XiSZcK/+dso8bRTP2pD65DufH96WOBuKSwWlAGD4QJ2Oqtff3e99mxVnJr8AXSGi02ni0+YAAAAASUVORK5CYII=';
 
 async function githubAPI(path: string) :Promise<IssueResponse> {
 	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN')
@@ -29,10 +28,116 @@ async function githubAPI(path: string) :Promise<IssueResponse> {
   	return await res.json();
 }
 
+// GraphQL APIクライアント
+async function githubGraphQL<T>(query: string, variables: Record<string, unknown> = {}): Promise<GraphQLResponse<T>> {
+	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN');
+	
+	const headers = {
+		'Authorization': `token ${TOKEN}`,
+		'Content-Type': 'application/json',
+	};
+	
+	const res = await fetch('https://api.github.com/graphql', {
+		method: 'POST',
+		headers,
+		body: JSON.stringify({ query, variables }),
+	});
+	
+	if (!res.ok) {
+		throw new Error(`GraphQL API error: ${res.statusText}`);
+	}
+	
+	return await res.json();
+}
+
 async function fetchIssues(params: {[index: string]: string}) {
 	const url  = `search/issues?q=${Object.keys(params).map(k => `${k}:${params[k]}`).join('+')}`;
 	const res = await githubAPI(url)
 	return res;
+}
+
+async function enrichPRsWithStatus(issues: IssueResponse): Promise<void> {
+	const prsByRepo = new Map<string, { owner: string; repo: string; numbers: number[] }>();
+	
+	for (const item of issues.items) {
+		if (!item.html_url.includes('/pull/')) continue;
+		
+		const urlParts = item.repository_url.split('/');
+		const repo = urlParts.pop() || '';
+		const owner = urlParts.pop() || '';
+		const repoKey = `${owner}/${repo}`;
+		
+		if (!prsByRepo.has(repoKey)) {
+			prsByRepo.set(repoKey, { owner, repo, numbers: [] });
+		}
+		
+		// PR番号を抽出
+		const prNumber = parseInt(item.html_url.split('/pull/')[1]);
+		prsByRepo.get(repoKey)!.numbers.push(prNumber);
+	}
+	
+	// 各リポジトリのPRステータスを取得
+	const statusPromises = Array.from(prsByRepo.entries()).map(async ([repoKey, { owner, repo, numbers }]) => {
+		const query = `
+			query GetPRStatuses($owner: String!, $repo: String!) {
+				repository(owner: $owner, name: $repo) {
+					${numbers.map((num, idx) => `
+						pr${idx}: pullRequest(number: ${num}) {
+							number
+							commits(last: 1) {
+								nodes {
+									commit {
+										statusCheckRollup {
+											state
+										}
+									}
+								}
+							}
+						}
+					`).join('\n')}
+				}
+			}
+		`;
+		
+		try {
+			const result = await githubGraphQL<RepositoryPRStatus>(query, { owner, repo });
+			
+			if (result.data?.repository) {
+				// ステータス情報をマップに格納
+				const statusMap = new Map<string, string>();
+				
+				// 各PRのステータスを取得
+				Object.keys(result.data.repository).forEach(key => {
+					if (key.startsWith('pr')) {
+						const pr = result.data!.repository[key];
+						const state = pr.commits.nodes[0]?.commit?.statusCheckRollup?.state;
+						if (state) {
+							statusMap.set(`${repoKey}#${pr.number}`, state);
+						}
+					}
+				});
+				
+				// 元のissuesにステータス情報を追加
+				for (const item of issues.items) {
+					if (!item.html_url.includes('/pull/')) continue;
+					
+					const itemRepo = item.repository_url.split('/').slice(-2).join('/');
+					if (itemRepo === repoKey) {
+						const prNumber = parseInt(item.html_url.split('/pull/')[1]);
+						const state = statusMap.get(`${repoKey}#${prNumber}`);
+						if (state) {
+							item.statusCheckRollup = { state: state as 'SUCCESS' | 'FAILURE' | 'PENDING' | 'ERROR' };
+						}
+					}
+				}
+			}
+		} catch (error) {
+			// エラーが発生してもステータスなしで続行
+			console.error(`Failed to fetch PR statuses for ${repoKey}:`, error);
+		}
+	});
+	
+	await Promise.all(statusPromises);
 }
 
 function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = false} : {title: string, color: string, icon: string, shouldFold?: boolean }) {
@@ -72,7 +177,7 @@ function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = fa
           ...groupedByMilestone[milestoneKey].map(e => ({
             text: fold(`${e.title} by ${e.user.login}`, shouldFold),
             href: e.html_url,
-            image: icon,
+            image: getIconForItem(e, icon),
           }))
         ])
       ];
@@ -83,6 +188,23 @@ function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = fa
 function fold(text: string, fold = false) {
 	return  `${(fold ? '--' : '')}${text}`
 }
+
+function getIconForItem(item: IssueItem, defaultIcon: string): string {
+	const state = item.statusCheckRollup?.state;
+	switch (state) {
+		case 'SUCCESS':
+			return ICON_MERGE;
+		case 'FAILURE':
+			return ICON_CAUTION;
+		case 'PENDING':
+			return ICON_CAUTION;
+		case 'ERROR':
+			return ICON_CAUTION;
+		default:
+			return defaultIcon;
+	}
+}
+
 
 async function main() {
 	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN')
@@ -103,6 +225,12 @@ async function main() {
 	const prs = await fetchIssues({'type': 'pr', 'author': '@me', 'state': 'open'});
 	const reviews = await fetchIssues({'type': 'pr', 'state': 'open', 'review-requested': '@me'});
 	const assigned = await fetchIssues({'type': 'issue', 'state': 'open', 'assignee': '@me'});
+	
+	// PRのステータス情報を取得
+	await enrichPRsWithStatus(prs);
+	await enrichPRsWithStatus(reviews);
+	await enrichPRsWithStatus(assigned);
+	
 	xbar([
 		{
 			text: '●',
@@ -115,19 +243,19 @@ async function main() {
 			refresh: true
 		}
 	]);
-	printIssues(prs, {title: `Pull Requests (${prs.items.length})`, color: "#58BE89", icon: ICON_PR } );
+	printIssues(prs, {title: `Pull Requests (${prs.items.length})`, color: "#58BE89", icon: ICON_CAUTION } );
 	xbar([
 		{
 			text: '---'
 		}
 	])
-	printIssues(reviews, {title: `Awaiting Reviews (${reviews.items.length})`, color: '#ff0000', icon: ICON_PR });
+	printIssues(reviews, {title: `Awaiting Reviews (${reviews.items.length})`, color: '#ff0000', icon: ICON_CAUTION });
 	xbar([
 		{
 			text: '---'
 		}
 	])
-	printIssues(assigned, {title: `Assigned Issues (${assigned.items.length})`, color: '#66aaff', icon: ICON_ISSUE, shouldFold: assigned.items.length > 10 } );
+	printIssues(assigned, {title: `Assigned Issues (${assigned.items.length})`, color: '#66aaff', icon: ICON_CAUTION, shouldFold: assigned.items.length > 10 } );
 }
 
 try {
@@ -148,11 +276,40 @@ interface IssueItem {
 	title: string,
 	html_url: string,
 	repository_url: string,
-user: {
-login: string
-},
-milestone?: {
-title: string,
+	user: {
+		login: string
+	},
+	milestone?: {
+		title: string,
+	},
+	// GraphQLで取得するステータス情報
+	statusCheckRollup?: {
+		state: 'SUCCESS' | 'FAILURE' | 'PENDING' | 'ERROR' | null
+	}
 }
 
+// GraphQL関連の型定義
+interface GraphQLResponse<T> {
+	data?: T;
+	errors?: Array<{
+		message: string;
+		path?: string[];
+	}>;
+}
+
+interface RepositoryPRStatus {
+	repository: {
+		[key: string]: {
+			number: number;
+			commits: {
+				nodes: Array<{
+					commit: {
+						statusCheckRollup: {
+							state: 'SUCCESS' | 'FAILURE' | 'PENDING' | 'ERROR' | null;
+						} | null;
+					};
+				}>;
+			};
+		};
+	};
 }
