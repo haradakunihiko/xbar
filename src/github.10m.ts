@@ -31,7 +31,6 @@ async function githubAPI(path: string) :Promise<IssueResponse> {
   	return await res.json();
 }
 
-// GraphQL APIクライアント
 async function githubGraphQL<T>(query: string, variables: Record<string, unknown> = {}): Promise<GraphQLResponse<T>> {
 	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN');
 	
