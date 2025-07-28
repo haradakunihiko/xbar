@@ -74,12 +74,10 @@ async function enrichPRsWithStatus(issues: IssueResponse): Promise<void> {
 			prsByRepo.set(repoKey, { owner, repo, numbers: [] });
 		}
 		
-		// PR番号を抽出
 		const prNumber = parseInt(item.html_url.split('/pull/')[1]);
 		prsByRepo.get(repoKey)!.numbers.push(prNumber);
 	}
 	
-	// 各リポジトリのPRステータスを取得
 	const statusPromises = Array.from(prsByRepo.entries()).map(async ([repoKey, { owner, repo, numbers }]) => {
 		const query = `
 			query GetPRStatuses($owner: String!, $repo: String!) {
@@ -106,10 +104,8 @@ async function enrichPRsWithStatus(issues: IssueResponse): Promise<void> {
 			const result = await githubGraphQL<RepositoryPRStatus>(query, { owner, repo });
 			
 			if (result.data?.repository) {
-				// ステータス情報をマップに格納
 				const statusMap = new Map<string, string>();
 				
-				// 各PRのステータスを取得
 				Object.keys(result.data.repository).forEach(key => {
 					if (key.startsWith('pr')) {
 						const pr = result.data!.repository[key];
@@ -120,7 +116,6 @@ async function enrichPRsWithStatus(issues: IssueResponse): Promise<void> {
 					}
 				});
 				
-				// 元のissuesにステータス情報を追加
 				for (const item of issues.items) {
 					if (!item.html_url.includes('/pull/')) continue;
 					
@@ -135,7 +130,6 @@ async function enrichPRsWithStatus(issues: IssueResponse): Promise<void> {
 				}
 			}
 		} catch (error) {
-			// エラーが発生してもステータスなしで続行
 			console.error(`Failed to fetch PR statuses for ${repoKey}:`, error);
 		}
 	});
@@ -231,7 +225,6 @@ async function main() {
 	const prs = await fetchIssues({'type': 'pr', 'author': '@me', 'state': 'open'});
 	const reviews = await fetchIssues({'type': 'pr', 'state': 'open', 'review-requested': '@me'});
 	
-	// PRのステータス情報を取得
 	await enrichPRsWithStatus(prs);
 	await enrichPRsWithStatus(reviews);
 
@@ -280,13 +273,11 @@ interface IssueItem {
 	milestone?: {
 		title: string,
 	},
-	// GraphQLで取得するステータス情報
 	statusCheckRollup?: {
 		state: 'SUCCESS' | 'FAILURE' | 'PENDING' | 'ERROR' | null
 	}
 }
 
-// GraphQL関連の型定義
 interface GraphQLResponse<T> {
 	data?: T;
 	errors?: Array<{
