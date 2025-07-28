@@ -23,7 +23,7 @@ The following information can be displayed:
 
 1.  Clone this repository or download the `github.10m.ts` file
 2.  Place the `github.10m.ts` file in the Xbar plugins directory using one of the following methods:
-    *   **Create a symbolic link (recommended):**
+    *   **Create a symbolic link:**
         Run the following command in your terminal. Replace `<path_to_plugin_directory>` with the actual path to the `src` directory containing `github.10m.ts`:
         ```bash
         ln -s <path_to_plugin_directory>/src/github.10m.ts ~/Library/Application\ Support/xbar/plugins/github.10m.ts
