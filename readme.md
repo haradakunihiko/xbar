@@ -1,47 +1,47 @@
 # GitHub Issues Xbar Plugin
 
-これは、GitHub の Issue や Pull Request をメニューバーに表示するための [Xbar](https://xbarapp.com/) プラグインです。
+This is an [Xbar](https://xbarapp.com/) plugin that displays GitHub Issues and Pull Requests in your menu bar.
 
-以下の情報を表示できます。
+The following information can be displayed:
 
-*   あなたが作成した Pull Request
-*   あなたにレビューが割り当てられた Pull Request
-*   あなたにアサインされた Issue および Pull Request
+*   Pull Requests you created
+*   Pull Requests assigned to you for review
+*   Issues and Pull Requests assigned to you
 
-## 特徴
+## Features
 
-*   メニューバーから素早く GitHub のタスクを確認できます。
-*   Deno で書かれており、設定も簡単です。
+*   Quickly check your GitHub tasks from the menu bar
+*   Written in Deno for easy setup
 
-## 前提条件
+## Prerequisites
 
-*   [Deno](https://deno.land/) がインストールされていること。
+*   [Deno](https://deno.land/) must be installed
 
-## インストール
+## Installation
 
-1.  このリポジトリをクローンするか、`github.10m.ts` ファイルをダウンロードします。
-2.  `github.10m.ts` ファイルを Xbar のプラグインディレクトリに配置します。以下のいずれかの方法で行います。
-    *   **シンボリックリンクを作成する (推奨):**
-        ターミナルで以下のコマンドを実行します。`<path_to_plugin_directory>` は、`github.10m.ts` がある `src` ディレクトリの実際のパスに置き換えてください。
+1.  Clone this repository or download the `github.10m.ts` file
+2.  Place the `github.10m.ts` file in the Xbar plugins directory using one of the following methods:
+    *   **Create a symbolic link (recommended):**
+        Run the following command in your terminal. Replace `<path_to_plugin_directory>` with the actual path to the `src` directory containing `github.10m.ts`:
         ```bash
         ln -s <path_to_plugin_directory>/src/github.10m.ts ~/Library/Application\ Support/xbar/plugins/github.10m.ts
         ```
-    *   **ファイルを直接コピーする:**
-        `github.10m.ts` ファイルを `~/Library/Application Support/xbar/plugins/` ディレクトリにコピーします。
+    *   **Copy the file directly:**
+        Copy the `github.10m.ts` file to `~/Library/Application Support/xbar/plugins/` directory
 
-## 設定
+## Configuration
 
-1.  メニューバーの Xbar アイコンをクリックし、「Open plugins...」を選択します。
+1.  Click the Xbar icon in the menu bar and select "Open plugins..."
 
-    <img width="734" alt="スクリーンショット 2022-07-05 20 52 57" src="https://user-images.githubusercontent.com/4531125/177322388-dab90841-0472-4fc9-8715-b9db5ffb2624.png">
+    <img width="734" alt="Screenshot 2022-07-05 20 52 57" src="https://user-images.githubusercontent.com/4531125/177322388-dab90841-0472-4fc9-8715-b9db5ffb2624.png">
 
-2.  表示されたプラグイン一覧の中から `github.10m.ts` を見つけ、設定を行います。
-    *   **GitHub Token の設定:** プラグインが GitHub API にアクセスするために必要な個人アクセストークンを設定します。トークンは [GitHub の設定ページ](https://github.com/settings/tokens) から作成できます。必要なスコープは `repo` (プライベートリポジトリを含む場合) または `public_repo` (パブリックリポジトリのみの場合) です。
+2.  Find `github.10m.ts` in the plugin list and configure it:
+    *   **Setting up GitHub Token:** Configure the personal access token required for the plugin to access the GitHub API. You can create a token from the [GitHub settings page](https://github.com/settings/tokens). Required scopes are `repo` (if including private repositories) or `public_repo` (for public repositories only)
 
-    <img width="856" alt="スクリーンショット 2022-07-05 20 53 12" src="https://user-images.githubusercontent.com/4531125/177322401-0d1793c8-e287-4c60-a038-1de09c4f7abd.png">
+    <img width="856" alt="Screenshot 2022-07-05 20 53 12" src="https://user-images.githubusercontent.com/4531125/177322401-0d1793c8-e287-4c60-a038-1de09c4f7abd.png">
 
-3.  設定後、Xbar メニューから「Refresh all plugins」を選択するか、個別のプラグインメニューから「Refresh」を選択してプラグインを再読み込みします。
+3.  After configuration, refresh the plugin by selecting "Refresh all plugins" from the Xbar menu or "Refresh" from the individual plugin menu
 
-## 貢献
+## Contributing
 
-バグ報告や機能リクエストは、Issue または Pull Request でお願いします。
+Please submit bug reports and feature requests via Issues or Pull Requests.
