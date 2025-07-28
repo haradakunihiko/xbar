@@ -15,6 +15,7 @@ import { xbar, separator } from "https://deno.land/x/xbar@v2.1.0/mod.ts";
 
 const ICON_BASE = 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAA'
 const ICON_MERGE = ICON_BASE+ 'TJJREFUKJG9krFOAlEQRe/MLpqHnd/ATyBWsLWF+hcLPYXibvwCE/gLC2MNVrD7AbbGnpjYboBlro2QXWATabzVy5x338ydPKBC4awTVTEA8Huz9i1FI5gZBINh6+0lnHUiEXkAUGmWMGm/c7Fues4pLU9IPv+aAABm9i2qT6Pm+BECbuoqpnZWW4lmmRLG3ZdV9VyAOEyD+1JdVO4yqX+ua7UPofRHrUlEMgaA4cVYALkEACF6e/N2k4DdJCh1Ky7nENftyVACo9akcjElox3I9yfjsdoaVfFPHbtpcG2GOUy/wjS42r0QTjs3ZpibYV7kPmkxVuuGOKfIl1MAr0WjqMRcrBqec8oCVwDwnNOFnwugezkJ4+ZnFbkPeANanpwsAQr7+2m8Qab1FKcAeYgfqR/3P4pMOYR15QAAAABJRU5ErkJggg==';
+const ICON_MERGE_CAUTION = 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAABE0lEQVR4AZ1Sy27CMBCk976+pz2AbFcq5AFtUe/9kYo/4xDHXLgA+QeQgD8AwozBQguJEESeZHdmZ5PY26i7bKwHdZrnbVv188QUWVtNbUf1SNIErmRcCxep2fCj+Tjqfz6juAgmxCWRRWqdp+a//Gs8iCY20ZPsrfU0bDVf2eTcSLMHzMLoUpPkiV6iwcpGOqIYzIxd17x7I2qYCxwEI/6J5lBUpXuNAt6480nFjTpxIZHEJmwvhCNBnTimpwfJu42uozanVjJiY0KyyEjebMRxfNuuXmBz5tj6FH3EsrH68TpqhM5DD5PDsRMuJPiaolKnkeM2/tUveOsEtWJRD5MldNczX+xK2FjHwoXkmo6S29Yed6S/wL/h084AAAAASUVORK5CYII=';
 const ICON_CAUTION = ICON_BASE+ 'ZxJREFUKJGdkjFoU2EUhb97k9jNRzEFoWvJVHXoZCqIaQaH7JaUbtpi2zc4ORWJYKGTYJLBroFaiGPo0hBwyAOhU51Cd8EOOid53uugL4SnkOK3/dx7OPccfvhPZPqxHZUWc0gIUjFs6c/CJdDBtN580P36lzCM1jZ+mr9HuFKkJfgXABO9i/mmqOTd7VlztXcyEYbR2oabtFx5kx+Oa7VHn+LpS7bOV3K5UfBaTF+6WLW52juR7ai0mDEGovq2WezuJ8t7UdkBGsXu5KqdfvlQhOeeGRc0h4QIV/nhuDarkIVgft+xHxJnQwWpKNJKn/cvasvtkcCxuFTUsKWkiOsgrhcoBb2uIE1W4NKRO8DH6cF0KSnLewYDBTqGb26dr+Sm53tR2ZNmE8LTx3O4V9XpKKZ1FV24MZyf2aoH8YE5garXBWC3X1oX12NXO8zfvPWqttwepZ08iA9wXqDypFE8a09y7PZL64geCXx37IO4XiSZcK/+dso8bRTP2pD65DufH96WOBuKSwWlAGD4QJ2Oqtff3e99mxVnJr8AXSGi02ni0+YAAAAASUVORK5CYII=';
 
 async function githubAPI(path: string) :Promise<IssueResponse> {
@@ -140,7 +141,7 @@ async function enrichPRsWithStatus(issues: IssueResponse): Promise<void> {
 	await Promise.all(statusPromises);
 }
 
-function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = false} : {title: string, color: string, icon: string, shouldFold?: boolean }) {
+function printIssues(issues: IssueResponse, {title, color, icon, shouldFold = false} : {title: string, color: string, icon?: string, shouldFold?: boolean }) {
   const groupedByRepo = issues.items.reduce<{[repoKey: string]: IssueItem[]}>((acc, current) => {
     const partial = current.repository_url.split('/');
     const repo = partial.pop() || '';
@@ -189,19 +190,22 @@ function fold(text: string, fold = false) {
 	return  `${(fold ? '--' : '')}${text}`
 }
 
-function getIconForItem(item: IssueItem, defaultIcon: string): string {
+function getIconForItem(item: IssueItem, defaultIcon?: string): string {
+	if (defaultIcon) {
+		return defaultIcon;
+	}
 	const state = item.statusCheckRollup?.state;
 	switch (state) {
 		case 'SUCCESS':
 			return ICON_MERGE;
 		case 'FAILURE':
-			return ICON_CAUTION;
+			return ICON_MERGE_CAUTION;
 		case 'PENDING':
-			return ICON_CAUTION;
+			return ICON_MERGE_CAUTION;
 		case 'ERROR':
-			return ICON_CAUTION;
+			return ICON_MERGE_CAUTION;
 		default:
-			return defaultIcon;
+			return ICON_CAUTION;
 	}
 }
 
@@ -243,13 +247,13 @@ async function main() {
 			refresh: true
 		}
 	]);
-	printIssues(prs, {title: `Pull Requests (${prs.items.length})`, color: "#58BE89", icon: ICON_CAUTION } );
+	printIssues(prs, {title: `Pull Requests (${prs.items.length})`, color: "#58BE89" } );
 	xbar([
 		{
 			text: '---'
 		}
 	])
-	printIssues(reviews, {title: `Awaiting Reviews (${reviews.items.length})`, color: '#ff0000', icon: ICON_CAUTION });
+	printIssues(reviews, {title: `Awaiting Reviews (${reviews.items.length})`, color: '#ff0000' });
 	xbar([
 		{
 			text: '---'
