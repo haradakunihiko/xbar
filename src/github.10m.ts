@@ -88,6 +88,8 @@ async function fetchIssues(params: {[index: string]: string}): Promise<IssueResp
 							}
 							reviewDecision
 							mergeable
+							headRefName
+							baseRefName
 							commits(last: 1) {
 								nodes {
 									commit {
@@ -124,7 +126,9 @@ async function fetchIssues(params: {[index: string]: string}): Promise<IssueResp
 			milestone: node.milestone ? { title: node.milestone.title } : undefined,
 			statusCheckRollup: node.commits?.nodes[0]?.commit?.statusCheckRollup || undefined,
 			reviewDecision: node.reviewDecision,
-			mergeable: node.mergeable as keyof typeof MERGEABLE_STATE | undefined
+			mergeable: node.mergeable as keyof typeof MERGEABLE_STATE | undefined,
+			headRefName: node.headRefName,
+			baseRefName: node.baseRefName
 		};
 	});
 	
@@ -164,9 +168,16 @@ function printIssues(issues: IssueResponse, {title, color, shouldFold = false} :
         return acc;
       }, {});
 
+      // マイルストーンをソート（空のマイルストーンは最後に）
+      const sortedMilestoneKeys = Object.keys(groupedByMilestone).sort((a, b) => {
+        if (a === "") return 1;  // 空のマイルストーンは最後
+        if (b === "") return -1;
+        return a.localeCompare(b);  // その他は文字列順
+      });
+
       return [
         { text: fold(repoKey, shouldFold) },
-        ...Object.keys(groupedByMilestone).flatMap((milestoneKey) => [
+        ...sortedMilestoneKeys.flatMap((milestoneKey) => [
           ...(milestoneKey ? [{ text: fold(`${milestoneKey}`, shouldFold) }]: [{ text: fold(`no-milestone`, shouldFold) }]),
           ...groupedByMilestone[milestoneKey].map(e => ({
             text: fold(`${e.title} by ${e.user.login}`, shouldFold),
@@ -269,7 +280,9 @@ interface IssueItem {
 		state: keyof typeof STATUS_CHECK_STATE | null
 	},
 	reviewDecision?: string,
-	mergeable?: keyof typeof MERGEABLE_STATE
+	mergeable?: keyof typeof MERGEABLE_STATE,
+	headRefName?: string,
+	baseRefName?: string
 }
 
 interface GraphQLResponse<T> {
@@ -301,6 +314,8 @@ interface SearchIssuesResponse {
 				};
 				reviewDecision?: string;
 				mergeable?: string;
+				headRefName?: string;
+				baseRefName?: string;
 				commits?: {
 					nodes: Array<{
 						commit: {
