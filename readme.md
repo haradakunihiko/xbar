@@ -1,6 +1,8 @@
-# GitHub Issues Xbar Plugin
+# Plugins
 
-This is an [Xbar](https://xbarapp.com/) plugin that displays GitHub Issues and Pull Requests in your menu bar.
+## GitHub Issues Xbar Plugin
+
+Display GitHub Pull Requests in your menu bar.
 
 <img src="images/screenshot.png" width="300" alt="Screenshot">
 
@@ -10,16 +12,16 @@ The following information can be displayed:
 *   Pull Requests assigned to you for review
 *   Issues and Pull Requests assigned to you
 
-## Features
+### Features
 
 *   Quickly check your GitHub tasks from the menu bar
 *   Written in Deno for easy setup
 
-## Prerequisites
+### Prerequisites
 
 *   [Deno](https://deno.land/) must be installed
 
-## Installation
+### Installation
 
 1.  Clone this repository or download the `github.10m.ts` file
 2.  Place the `github.10m.ts` file in the Xbar plugins directory using one of the following methods:
@@ -31,7 +33,7 @@ The following information can be displayed:
     *   **Copy the file directly:**
         Copy the `github.10m.ts` file to `~/Library/Application Support/xbar/plugins/` directory
 
-## Configuration
+### Configuration
 
 1.  Click the Xbar icon in the menu bar and select "Open plugins..."
 
@@ -44,6 +46,6 @@ The following information can be displayed:
 
 3.  After configuration, refresh the plugin by selecting "Refresh all plugins" from the Xbar menu or "Refresh" from the individual plugin menu
 
-## Contributing
+# Contributing
 
 Please submit bug reports and feature requests via Issues or Pull Requests.
