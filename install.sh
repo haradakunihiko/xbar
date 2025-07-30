@@ -1,57 +1,57 @@
 #!/bin/bash
 
-# xbar GitHub PR Status スクリプトのインストール
+# xbar GitHub PR Status Script Installation
 
-# 引数チェック
+# Check arguments
 if [ $# -eq 0 ]; then
-    echo "エラー: GitHub tokenが指定されていません"
-    echo "使用方法: $0 <github_token>"
+    echo "Error: GitHub token not specified"
+    echo "Usage: $0 <github_token>"
     exit 1
 fi
 
 GITHUB_TOKEN="$1"
 
-# xbarのプラグインディレクトリのデフォルトパス
+# Default xbar plugin directory path
 XBAR_PLUGIN_DIR="$HOME/Library/Application Support/xbar/plugins"
 
-# スクリプトファイル名
+# Script filename
 SCRIPT_NAME="github.10m.ts"
 
-# プラグインディレクトリの存在確認と作成
+# Check and create plugin directory
 if [ ! -d "$XBAR_PLUGIN_DIR" ]; then
-    echo "xbarのプラグインディレクトリが見つかりません: $XBAR_PLUGIN_DIR"
-    echo "ディレクトリを作成しています..."
+    echo "xbar plugin directory not found: $XBAR_PLUGIN_DIR"
+    echo "Creating directory..."
     mkdir -p "$XBAR_PLUGIN_DIR"
     if [ $? -eq 0 ]; then
-        echo "✓ ディレクトリを作成しました: $XBAR_PLUGIN_DIR"
+        echo "✓ Directory created: $XBAR_PLUGIN_DIR"
     else
-        echo "エラー: ディレクトリの作成に失敗しました"
+        echo "Error: Failed to create directory"
         exit 1
     fi
 fi
 
-# GitHubからスクリプトをダウンロード
-echo "GitHub PR Statusスクリプトをダウンロード中..."
+# Download script from GitHub
+echo "Downloading GitHub PR Status script..."
 curl -L -o "$XBAR_PLUGIN_DIR/$SCRIPT_NAME" "https://raw.githubusercontent.com/haradakunihiko/xbar/main/src/github.10m.ts"
 
-# ダウンロードの成功確認
+# Check download success
 if [ $? -eq 0 ]; then
-    # 実行権限を付与
+    # Make executable
     chmod +x "$XBAR_PLUGIN_DIR/$SCRIPT_NAME"
     
-    # vars.jsonファイルを作成
+    # Create vars.json file
     VARS_FILE="$XBAR_PLUGIN_DIR/${SCRIPT_NAME}.vars.json"
     echo "{" > "$VARS_FILE"
     echo "    \"VAR_GITHUB_TOKEN\": \"$GITHUB_TOKEN\"" >> "$VARS_FILE"
     echo "}" >> "$VARS_FILE"
     
-    echo "✓ インストール完了: $XBAR_PLUGIN_DIR/$SCRIPT_NAME"
-    echo "✓ 設定ファイル作成: $VARS_FILE"
+    echo "✓ Installation complete: $XBAR_PLUGIN_DIR/$SCRIPT_NAME"
+    echo "✓ Configuration file created: $VARS_FILE"
     echo ""
-    echo "次のステップ:"
-    echo "1. xbarを再起動する"
-    echo "2. メニューバーに追加されたアイコンを確認"
+    echo "Next steps:"
+    echo "1. Restart xbar"
+    echo "2. Check for the new icon in your menu bar"
 else
-    echo "エラー: スクリプトのダウンロードに失敗しました"
+    echo "Error: Failed to download script"
     exit 1
 fi
