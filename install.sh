@@ -2,20 +2,25 @@
 
 # xbar GitHub PR Status Script Installation
 
-# Check arguments
-if [ $# -eq 0 ]; then
-    echo "Error: GitHub token not specified"
-    echo "Usage: $0 <github_token>"
-    exit 1
-fi
-
-GITHUB_TOKEN="$1"
-
 # Default xbar plugin directory path
 XBAR_PLUGIN_DIR="$HOME/Library/Application Support/xbar/plugins"
 
 # Script filename
 SCRIPT_NAME="github.10m.ts"
+
+# Check GitHub CLI (gh) is installed
+if ! command -v gh >/dev/null 2>&1; then
+    echo "Error: GitHub CLI (gh) is not installed"
+    echo "Install it first, e.g.: brew install gh"
+    exit 1
+fi
+
+# Check gh is authenticated
+if ! gh auth status >/dev/null 2>&1; then
+    echo "Error: GitHub CLI (gh) is not authenticated"
+    echo "Run the following and try again: gh auth login"
+    exit 1
+fi
 
 # Check and create plugin directory
 if [ ! -d "$XBAR_PLUGIN_DIR" ]; then
@@ -38,15 +43,8 @@ curl -L -o "$XBAR_PLUGIN_DIR/$SCRIPT_NAME" "https://raw.githubusercontent.com/ha
 if [ $? -eq 0 ]; then
     # Make executable
     chmod +x "$XBAR_PLUGIN_DIR/$SCRIPT_NAME"
-    
-    # Create vars.json file
-    VARS_FILE="$XBAR_PLUGIN_DIR/${SCRIPT_NAME}.vars.json"
-    echo "{" > "$VARS_FILE"
-    echo "    \"VAR_GITHUB_TOKEN\": \"$GITHUB_TOKEN\"" >> "$VARS_FILE"
-    echo "}" >> "$VARS_FILE"
-    
+
     echo "✓ Installation complete: $XBAR_PLUGIN_DIR/$SCRIPT_NAME"
-    echo "✓ Configuration file created: $VARS_FILE"
     echo ""
     echo "Next steps:"
     echo "1. Restart xbar"

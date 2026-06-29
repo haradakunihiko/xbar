@@ -1,4 +1,4 @@
-#!/usr/bin/env -S -P/${HOME}/.deno/bin:/opt/homebrew/bin deno run --allow-net=api.github.com --allow-env
+#!/usr/bin/env -S -P/${HOME}/.deno/bin:/opt/homebrew/bin PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${HOME}/.deno/bin deno run --allow-run=gh
 /// <reference lib="deno.ns" />
  
 // <xbar.title>GitHub Notifications</xbar.title>
@@ -9,7 +9,6 @@
 // <xbar.image></xbar.image>
 // <xbar.dependencies>deno</xbar.dependencies>
 // <xbar.abouturl>https://github.com/haradakunihiko/xbar</xbar.abouturl>
-// <xbar.var>string(VAR_GITHUB_TOKEN=""): GITHUB API token to get access to remote data.</xbar.var>
 
 import { xbar, separator } from "https://deno.land/x/xbar@v2.1.0/mod.ts";
 
@@ -41,33 +40,49 @@ const ICON_GITHUB_FAILURE = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABJ0l
 const ICON_GITHUB_PENDING = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABF0lEQVR4AZVTwXGDMBDkYf8p4WaEZw4y0qgEd5ASkg5SQlJBSCpIOsgvPF2CS3AJlKDcCk4WY+zIDMvd6XZXQohq7SKi2nT2q+nc2LQuCI6G3dMadzEGoZAhuI4H2y9EWuy6zv8rnlYTTOtOqotxObP9uWo0vdIR/YUJBhTRUR7ETBLSTeRrFMSelBs55H2tA4gg3ULDfg/ejLEyrf2ei2BKdlrclY9YZZ8qSK/oFk3ch8lg3tlYFMkrTJoZdC4VcngeCz3ONMP2GbMrzp07sihm94Zvi3zXupc1+fC+eR36bVAkjgg/ICRmkvyEPDWzRIVZPKT2LaGSMuHlKkBSk9IV/H5uL/9QYh+PKgzXMPSbg2AU7NH/A1pvtWWw89UmAAAAAElFTkSuQmCC';
 
 
-async function githubGraphQL<T>(query: string, variables: Record<string, unknown> = {}): Promise<GraphQLResponse<T>> {
-	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN');
-	
-	const headers = {
-		'Authorization': `token ${TOKEN}`,
-		'Content-Type': 'application/json',
-	};
-	
-	const res = await fetch('https://api.github.com/graphql', {
-		method: 'POST',
-		headers,
-		body: JSON.stringify({ query, variables }),
-	});
-	
-	if (!res.ok) {
-		throw new Error(`GraphQL API error: ${res.statusText}`);
+async function githubGraphQL<T>(query: string, variables: Record<string, string> = {}): Promise<GraphQLResponse<T>> {
+	// Use the GitHub CLI (`gh`) so authentication is handled by `gh auth login`
+	// instead of a personal access token. `gh api graphql` reuses the credentials
+	// stored in the keychain, so no token needs to be configured in xbar.
+	const args = ['api', 'graphql', '-f', `query=${query}`];
+	for (const [key, value] of Object.entries(variables)) {
+		args.push('-f', `${key}=${value}`);
 	}
-	
-	return await res.json();
+
+	const command = new Deno.Command('gh', {
+		args,
+		stdout: 'piped',
+		stderr: 'piped',
+	});
+	const { code, stdout, stderr } = await command.output();
+
+	if (code !== 0) {
+		throw new Error(`gh api error: ${new TextDecoder().decode(stderr).trim()}`);
+	}
+
+	return JSON.parse(new TextDecoder().decode(stdout));
+}
+
+async function isGhAuthenticated(): Promise<boolean> {
+	try {
+		const { code } = await new Deno.Command('gh', {
+			args: ['auth', 'status'],
+			stdout: 'null',
+			stderr: 'null',
+		}).output();
+		return code === 0;
+	} catch {
+		// `gh` is not installed / not on PATH
+		return false;
+	}
 }
 
 async function fetchIssues(params: {[index: string]: string}): Promise<IssueResponse> {
 	const searchQuery = Object.keys(params).map(k => `${k}:${params[k]}`).join(' ');
 	
 	const query = `
-		query SearchIssues($query: String!) {
-			search(query: $query, type: ISSUE, first: 100) {
+		query SearchIssues($searchQuery: String!) {
+			search(query: $searchQuery, type: ISSUE, first: 100) {
 				issueCount
 				edges {
 					node {
@@ -106,7 +121,7 @@ async function fetchIssues(params: {[index: string]: string}): Promise<IssueResp
 		}
 	`;
 	
-	const result = await githubGraphQL<SearchIssuesResponse>(query, { query: searchQuery });
+	const result = await githubGraphQL<SearchIssuesResponse>(query, { searchQuery });
 	
 	if (!result.data) {
 		throw new Error('Failed to fetch issues');
@@ -214,9 +229,7 @@ function getIconForItem(item: IssueItem): string {
 
 
 async function main() {
-	const TOKEN = Deno.env.get('VAR_GITHUB_TOKEN')
-	if (!TOKEN) {
-		
+	if (!(await isGhAuthenticated())) {
 		xbar([
 			{
 				text: '●',
@@ -224,7 +237,7 @@ async function main() {
 			},
 			separator,
 			{
-				text: 'Open Plugin... in menu bar and set github token'
+				text: 'GitHub CLI (gh) is required. Install it and run: gh auth login'
 			}
 		]);
 		return;
