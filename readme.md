@@ -20,6 +20,12 @@ The following information can be displayed:
 ### Prerequisites
 
 *   [Deno](https://deno.land/) must be installed
+*   [GitHub CLI (`gh`)](https://cli.github.com/) must be installed and authenticated.
+    Authentication is handled by `gh`, so no personal access token is required.
+    ```bash
+    brew install gh   # if not installed
+    gh auth login     # authenticate via the browser
+    ```
 
 ### Installation
 
@@ -35,16 +41,23 @@ The following information can be displayed:
 
 ### Configuration
 
-1.  Click the Xbar icon in the menu bar and select "Open plugins..."
+No token configuration is needed. The plugin uses the GitHub CLI (`gh`) for
+authentication, so as long as `gh auth login` has been completed, it works out of
+the box.
 
-    <img src="images/setting.png" width="734" alt="Screenshot">
+1.  Make sure you are authenticated with the GitHub CLI:
+    ```bash
+    gh auth status
+    ```
+    If you are not logged in, run `gh auth login` and follow the browser prompts.
+    The required scopes (`repo` for private repositories) are requested automatically
+    during login.
 
-2.  Find `github.10m.ts` in the plugin list and configure it:
-    *   **Setting up GitHub Token:** Configure the personal access token required for the plugin to access the GitHub API. You can create a token from the [GitHub settings page](https://github.com/settings/tokens). Required scopes are `repo` (if including private repositories) or `public_repo` (for public repositories only)
+2.  Refresh the plugin by selecting "Refresh all plugins" from the Xbar menu or
+    "Refresh" from the individual plugin menu.
 
-    <img src="images/setting2.png" width="856" alt="Screenshot">
-
-3.  After configuration, refresh the plugin by selecting "Refresh all plugins" from the Xbar menu or "Refresh" from the individual plugin menu
+> **Note:** If you see a red `●` with "GitHub CLI (gh) is required", install `gh`
+> and run `gh auth login`.
 
 # Contributing
 
